@@ -70,6 +70,7 @@ animation: floatLogo 2.5s ease-in-out infinite alternate; box-shadow:0 0 15px rg
 <body>
 
 <script>
+// Create floating bubbles
 for(let i=0;i<35;i++){
   let b=document.createElement("div");
   b.classList.add("bubble");
@@ -113,7 +114,21 @@ for(let i=0;i<35;i++){
 </div>
 
 <script>
+// Quiz Data
+
 let quizData=[
+  // New questions to add to quizData
+{q:"What does Zama use to keep bids private?", o:["Zero-Knowledge Proofs","Fully Homomorphic Encryption","Mixers","Multi-Sig Wallets"], a:1},
+{q:"Which famous security company partnered with Zama?", o:["OpenZeppelin","Chainalysis","CertiK","Trail of Bits"], a:0},
+{q:"What layer does Zama provide privacy for?", o:["Consensus Layer","Application Layer","Blockchain Layer","Network Layer"], a:2},
+{q:"Zama testnet processes transactions in what state?", o:["Encrypted","Public","Partially Encrypted","Off-chain"], a:0},
+{q:"How many MPC nodes manage Zama decryption keys?", o:["7","13","21","5"], a:1},
+{q:"Which programming language is mainly used for Zama contracts?", o:["Solidity","Rust","Python","Go"], a:0},
+{q:"Zama allows confidential smart contracts on which chains?", o:["Only Zama Chain","Ethereum & L2s","Bitcoin","Polygon only"], a:1},
+{q:"What is the auction type used for ZAMA token sale?", o:["Open Bid","Sealed-Bid Dutch Auction","English Auction","Lottery"], a:1},
+{q:"What does ZAMA token pay for in the ecosystem?", o:["Gas fees & staking","NFT Minting","Wallet subscriptions","Exchange listings"], a:0},
+{q:"Which Zama feature makes auctions resistant to bots?", o:["FHE Confidential Bids","High Gas Fees","KYC Only","Time Lock"], a:0},
+
   {q:"What is Zama's main technology focus?", o:["Fully Homomorphic Encryption (FHE)","Gaming","AI Bots","DEX Trading"], a:0},
   {q:"On which chain will ZAMA token launch?", o:["Solana","Ethereum","BNB Chain","Tron"], a:1},
   {q:"Which auction model is used?", o:["Open Bid","Sealed-Bid Dutch Auction","Random Draw","Lottery"], a:1},
@@ -131,13 +146,28 @@ let quizData=[
   {q:"What is the main benefit of using Zama protocol in auctions?", o:["Fast TPS","Private Bids","Airdrop","Cheap Swaps"], a:1}
 ];
 
+// Shuffle function
+function shuffleArray(array){
+  for(let i=array.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [array[i],array[j]]=[array[j],array[i]];
+  }
+  return array;
+}
+
+// Shuffle questions
+quizData = shuffleArray(quizData);
+
 let index=0, score=0;
 
+// Load a question
 function loadQuestion(){
   let container=document.getElementById("questionContainer");
   container.style.opacity=0;
   setTimeout(()=>{
-    let q=quizData[index];
+    let q={...quizData[index]}; // clone question object
+    q.o = shuffleArray([...q.o]); // shuffle options
+
     document.getElementById("question").innerText=`Q${index+1}: ${q.q}`;
     document.getElementById("progress").innerText=`Question ${index+1} of ${quizData.length}`;
     let optBox=document.getElementById("options");
@@ -146,7 +176,7 @@ function loadQuestion(){
       let div=document.createElement("div");
       div.classList.add("option");
       div.innerText=opt;
-      div.onclick=()=>showFeedback(i);
+      div.onclick=()=>showFeedback(i,q);
       optBox.appendChild(div);
     });
     document.getElementById("feedback").style.display="none";
@@ -155,15 +185,16 @@ function loadQuestion(){
   },300);
 }
 
-function showFeedback(i){
+// Show feedback
+function showFeedback(selectedIndex, question){
+  let correctOptionText = quizData[index].o[quizData[index].a]; // original correct answer text
   let fb=document.getElementById("feedback");
-  let correct=quizData[index].a;
-  
-  if(i===correct){
+
+  if(question.o[selectedIndex] === correctOptionText){
     fb.innerText="Correct! 🎉";
     fb.style.color="#4caf50";
     score+=Math.round(100/quizData.length);
-  }else{
+  } else {
     fb.innerText="Oops! ❌ Good Luck Next Time";
     fb.style.color="#f44336";
   }
@@ -172,9 +203,9 @@ function showFeedback(i){
   // Highlight answers
   let options = document.getElementById("options").children;
   for(let opt of options){
-    opt.style.pointerEvents = "none";
-    if(opt.innerText === quizData[index].o[correct]){
-      opt.style.background = "#4caf50";
+    opt.style.pointerEvents="none";
+    if(opt.innerText === correctOptionText){
+      opt.style.background="#4caf50";
       opt.style.color="#fff";
     } else {
       opt.style.background="#f44336";
@@ -185,12 +216,14 @@ function showFeedback(i){
   document.getElementById("nextButtonContainer").innerHTML='<div class="next-btn" onclick="nextQuestion()">Next Question</div>';
 }
 
+// Next question
 function nextQuestion(){
   index++;
   if(index<quizData.length) loadQuestion();
   else showResult();
 }
 
+// Confetti
 function createConfetti(){
   for(let i=0;i<100;i++){
     let c=document.createElement("div");
@@ -199,11 +232,13 @@ function createConfetti(){
     c.style.top=Math.random()*100+"vh"; c.style.left=Math.random()*100+"vw";
     c.style.opacity=0.8; c.style.borderRadius="50%"; c.style.pointerEvents="none"; c.style.zIndex=999;
     document.body.appendChild(c);
-    c.animate([{transform:"translateY(0px)"},{transform:"translateY(100vh)"}],{duration:2000+Math.random()*2000,iterations:1,easing:"linear"});
+    c.animate([{transform:"translateY(0px)"},{transform:"translateY(100vh)"}],
+              {duration:2000+Math.random()*2000,iterations:1,easing:"linear"});
     setTimeout(()=>c.remove(),4000);
   }
 }
 
+// Show result
 function showResult(){
   document.getElementById("quizBox").style.display="none";
   let r=document.getElementById("result");
@@ -225,7 +260,7 @@ function showResult(){
 // Load first question
 loadQuestion();
 
-// Add Enter key support
+// Press Enter to go next
 document.addEventListener("keydown", function(e){
   if(e.key === "Enter"){
     let fb = document.getElementById("feedback");
