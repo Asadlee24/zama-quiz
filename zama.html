@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zama Knowledge Quiz – Made by Asad Lee</title>
+<style>
+body {
+  margin: 0;
+  font-family: 'Arial', sans-serif;
+  background: linear-gradient(to bottom, #fffde7, #fff9c4);
+  overflow-x: hidden;
+}
+
+/* Floating Bubbles */
+.bubble {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 235, 59, 0.35);
+  animation: floatUp 8s infinite ease-in;
+  z-index: 0;
+}
+@keyframes floatUp {0%{transform:translateY(100vh) scale(0.5);opacity:0.7;}100%{transform:translateY(-10vh) scale(1.2);opacity:0.1;}}
+
+/* Header */
+.header{text-align:center;padding:20px;position: relative; z-index:2;}
+.dp,.logo{width:100px;height:100px;border-radius:50%;border:3px solid #ffd600;object-fit:cover;
+animation: floatLogo 2.5s ease-in-out infinite alternate; box-shadow:0 0 15px rgba(255,193,7,0.7);margin-bottom:10px;}
+@keyframes floatLogo{0%{transform:translateY(0px) scale(1);}50%{transform:translateY(-8px) scale(1.05);}100%{transform:translateY(0px) scale(1);} }
+.title{font-size:36px;font-weight:bold;margin-top:10px;color:#ff8f00;text-shadow:1px 1px #fff;}
+.subtitle{font-size:18px;color:#bf360c;}
+.x-link{font-size:16px;color:#1DA1F2;text-decoration:none;display:inline-block;margin-top:5px;}
+.x-link:hover{text-decoration:underline;}
+
+/* Quiz Box */
+.quiz-box {
+  width:90%; max-width:720px; margin:20px auto; padding:30px;
+  background:rgba(255,255,255,0.95); border-radius:25px;
+  box-shadow:0 12px 35px rgba(0,0,0,0.25); position:relative; z-index:2; overflow:hidden;
+}
+.question-container {transition: all 0.5s ease;}
+.question {font-size:22px;font-weight:bold;margin-bottom:15px;color:#ff6f00;}
+.progress {font-size:16px;margin-bottom:15px;color:#bf360c;}
+.option {
+  background:#fff176;padding:14px 18px;margin:8px 0;border-radius:15px;cursor:pointer;transition:0.3s;font-size:18px;box-shadow:0 4px 12px rgba(0,0,0,0.1);
+}
+.option:hover{background:#ffd54f;transform:scale(1.05) rotate(-1deg);}
+
+/* Feedback */
+.feedback{
+  text-align:center;font-size:22px;font-weight:bold;margin-top:15px;display:none;
+}
+
+/* Result */
+.result{ text-align:center;font-size:32px;font-weight:bold;padding:25px;color:#ff6f00;text-shadow:1px 1px #fff; display:none;}
+.ama-founder{width:90%;max-width:720px;margin:40px auto 60px;padding:20px;background:rgba(255,255,255,0.95);border-radius:20px;box-shadow:0 8px 20px rgba(0,0,0,0.2);display:flex;align-items:center;gap:15px;position: relative; z-index:2;}
+.ama-founder img{width:70px;height:70px;border-radius:50%;animation: floatLogo 2s ease-in-out infinite alternate-reverse;box-shadow:0 0 10px rgba(255,111,0,0.6);}
+.ama-founder div{display:flex;flex-direction:column;}
+.ama-founder a{color:#1DA1F2;text-decoration:none;font-weight:bold;}
+.ama-founder a:hover{text-decoration:underline;}
+
+.share-buttons{margin-top:15px;}
+.share-buttons a{display:inline-block;margin:5px;padding:8px 12px;background:#1DA1F2;color:#fff;border-radius:8px;text-decoration:none;transition:0.3s;}
+.share-buttons a:hover{background:#0d8ddb;}
+
+.next-btn{display:inline-block;padding:10px 20px;margin-top:15px;background:#ff6f00;color:#fff;border-radius:10px;cursor:pointer;transition:0.3s;font-weight:bold;}
+.next-btn:hover{background:#ff8f00;}
+</style>
+</head>
+<body>
+
+<script>
+for(let i=0;i<35;i++){
+  let b=document.createElement("div");
+  b.classList.add("bubble");
+  let size=Math.random()*80+30;
+  b.style.width=size+"px"; b.style.height=size+"px";
+  b.style.left=Math.random()*100+"vw";
+  b.style.animationDuration=(5+Math.random()*6)+"s";
+  b.style.opacity=0.3+Math.random()*0.4;
+  document.body.appendChild(b);
+}
+</script>
+
+<div class="header">
+<img src="https://pbs.twimg.com/profile_images/1995841006147977216/0cyBZqh9_400x400.jpg" class="dp" alt="Asad Lee DP">
+<img src="https://avatars.githubusercontent.com/u/57671822?s=280&v=4" class="logo" alt="Zama Logo">
+<div class="title">Zama Knowledge Quiz</div>
+<div class="subtitle">Made by <a href="https://x.com/asadleo416" target="_blank" class="x-link">Asad Lee</a></div>
+<div class="x-link"><a href="https://x.com/zama" target="_blank">Follow Zama</a></div>
+</div>
+
+<div class="quiz-box" id="quizBox">
+  <div class="progress" id="progress"></div>
+  <div class="question-container" id="questionContainer">
+    <div id="question" class="question"></div>
+    <div id="options"></div>
+  </div>
+  <div class="feedback" id="feedback"></div>
+  <div id="nextButtonContainer"></div>
+</div>
+
+<div id="result" class="result"></div>
+
+<div class="ama-founder">
+<img src="https://pbs.twimg.com/profile_images/1984784923111145472/m3cNJC7t_400x400.jpg" alt="Rand Hindi DP">
+<div><span>ZAMA Founder</span><a href="https://x.com/randhindi" target="_blank">Rand Hindi</a></div>
+</div>
+
+<div class="ama-founder">
+<img src="https://avatars.githubusercontent.com/u/57671822?s=280&v=4" alt="Zama Logo">
+<div><span>ZAMA Official</span><a href="https://x.com/zama" target="_blank">Follow Zama</a></div>
+</div>
+
+<script>
+let quizData=[
+  {q:"What is Zama's main technology focus?", o:["Fully Homomorphic Encryption (FHE)","Gaming","AI Bots","DEX Trading"], a:0},
+  {q:"On which chain will ZAMA token launch?", o:["Solana","Ethereum","BNB Chain","Tron"], a:1},
+  {q:"Which auction model is used?", o:["Open Bid","Sealed-Bid Dutch Auction","Random Draw","Lottery"], a:1},
+  {q:"How much of total supply will be sold in the auction?", o:["5%","10%","20%","50%"], a:1},
+  {q:"What does Zama's core use-case enable?", o:["Private Computation","Layer 2 Fees","NFT Gaming","Bridges"], a:0},
+  {q:"What does Zama protocol make private?", o:["NFT Metadata","Wallet Addresses","User Bids","Gas Price"], a:2},
+  {q:"What is the full form of FHE?", o:["Fast Hashing Encryption","Fully Homomorphic Encryption","Full Hardware Engine","Flexible Hybrid Execution"], a:1},
+  {q:"How does Zama prevent auction bots?", o:["KYC","Gas War","FHE Confidential Bids","High Fees"], a:2},
+  {q:"Which industry does Zama ecosystem mainly target?", o:["AI & Privacy","Real Estate","DeFi Yield","Memecoins"], a:0},
+  {q:"Approximate total supply of ZAMA token?", o:["100M","1B","2B","10B"], a:1},
+  {q:"In Dutch Auction, how does the price behave?", o:["Constant","Increasing","Decreasing","Hidden"], a:2},
+  {q:"On which network will auction be conducted?", o:["Base","Ethereum","Avalanche","Polygon"], a:1},
+  {q:"What does Zama aim to democratize?", o:["Private Crypto Compute","Trading Bots","NFT Trading","Bridges"], a:0},
+  {q:"In Sealed-Bid system, how are bids submitted?", o:["Public","Encrypted","Shared","Random"], a:1},
+  {q:"What is the main benefit of using Zama protocol in auctions?", o:["Fast TPS","Private Bids","Airdrop","Cheap Swaps"], a:1}
+];
+
+let index=0, score=0;
+
+function loadQuestion(){
+  let container=document.getElementById("questionContainer");
+  container.style.opacity=0;
+  setTimeout(()=>{
+    let q=quizData[index];
+    document.getElementById("question").innerText=`Q${index+1}: ${q.q}`;
+    document.getElementById("progress").innerText=`Question ${index+1} of ${quizData.length}`;
+    let optBox=document.getElementById("options");
+    optBox.innerHTML="";
+    q.o.forEach((opt,i)=>{
+      let div=document.createElement("div");
+      div.classList.add("option");
+      div.innerText=opt;
+      div.onclick=()=>showFeedback(i);
+      optBox.appendChild(div);
+    });
+    document.getElementById("feedback").style.display="none";
+    document.getElementById("nextButtonContainer").innerHTML="";
+    container.style.opacity=1;
+  },300);
+}
+
+function showFeedback(i){
+  let fb=document.getElementById("feedback");
+  let correct=quizData[index].a;
+  
+  if(i===correct){
+    fb.innerText="Correct! 🎉";
+    fb.style.color="#4caf50";
+    score+=Math.round(100/quizData.length);
+  }else{
+    fb.innerText="Oops! ❌ Good Luck Next Time";
+    fb.style.color="#f44336";
+  }
+  fb.style.display="block";
+
+  // Highlight answers
+  let options = document.getElementById("options").children;
+  for(let opt of options){
+    opt.style.pointerEvents = "none";
+    if(opt.innerText === quizData[index].o[correct]){
+      opt.style.background = "#4caf50";
+      opt.style.color="#fff";
+    } else {
+      opt.style.background="#f44336";
+      opt.style.color="#fff";
+    }
+  }
+
+  document.getElementById("nextButtonContainer").innerHTML='<div class="next-btn" onclick="nextQuestion()">Next Question</div>';
+}
+
+function nextQuestion(){
+  index++;
+  if(index<quizData.length) loadQuestion();
+  else showResult();
+}
+
+function createConfetti(){
+  for(let i=0;i<100;i++){
+    let c=document.createElement("div");
+    c.style.position="fixed"; c.style.width="10px"; c.style.height="10px";
+    c.style.background=`hsl(${Math.random()*360},100%,50%)`;
+    c.style.top=Math.random()*100+"vh"; c.style.left=Math.random()*100+"vw";
+    c.style.opacity=0.8; c.style.borderRadius="50%"; c.style.pointerEvents="none"; c.style.zIndex=999;
+    document.body.appendChild(c);
+    c.animate([{transform:"translateY(0px)"},{transform:"translateY(100vh)"}],{duration:2000+Math.random()*2000,iterations:1,easing:"linear"});
+    setTimeout(()=>c.remove(),4000);
+  }
+}
+
+function showResult(){
+  document.getElementById("quizBox").style.display="none";
+  let r=document.getElementById("result");
+  r.style.display="block";
+  let displayScore=0;
+  let step=Math.ceil(score/50);
+  let interval=setInterval(()=>{
+    displayScore+=step;
+    if(displayScore>=score){displayScore=score;clearInterval(interval);}
+    r.innerHTML=`Your Score: <b>${displayScore}/100</b><br><br>
+    <div class="share-buttons">
+      <a href="https://x.com/asadleo416" target="_blank">Follow me on X</a>
+      <a href="https://x.com/zama" target="_blank">Follow Zama</a>
+    </div>`;
+  },30);
+  if(score>=80) createConfetti();
+}
+
+// Load first question
+loadQuestion();
+
+// Add Enter key support
+document.addEventListener("keydown", function(e){
+  if(e.key === "Enter"){
+    let fb = document.getElementById("feedback");
+    if(fb.style.display === "block"){
+      nextQuestion();
+    }
+  }
+});
+</script>
+</body>
+</html>
